@@ -20,7 +20,7 @@ import { Separator } from "./ui/separator";
 export function NoteCard() {
   return (
     <>
-      <Card className="transition duration-200 ease-in-out hover:-translate-y-2 hover:drop-shadow-md cursor-pointer">
+      <Card className="transition duration-200 ease-in-out hover:-translate-y-2 hover:drop-shadow-md cursor-pointer z-0">
         <CardHeader>
           <CardTitle>Card Title</CardTitle>
           <CardDescription>December 24, 2025</CardDescription>
