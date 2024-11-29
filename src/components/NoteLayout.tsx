@@ -89,7 +89,7 @@ export function NoteLayout() {
         <Separator />
       </div>
       <div className="container mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8 ml-8 mr-8 mb-8">
           <NoteCard />
           <NoteCard />
           <NoteCard />
