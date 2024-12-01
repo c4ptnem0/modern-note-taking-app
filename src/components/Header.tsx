@@ -1,11 +1,9 @@
-import { NoteCard } from "./NoteCard";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Label } from "./ui/label";
-import { LogOutIcon, MoonStarIcon, Plus, Search, Sun } from "lucide-react";
-import { Separator } from "./ui/separator";
-import { useTheme } from "./themes/theme-provider";
+import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { Label } from "../components/ui/label";
+import { LogOutIcon, MoonStarIcon, Search, Sun } from "lucide-react";
+import { Separator } from "../components/ui/separator";
 import {
   Dialog,
   DialogContent,
@@ -15,12 +13,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { NoteAdd } from "./NoteAdd";
-import { useState } from "react";
+import { useTheme } from "./themes/theme-provider";
 
-export function NoteLayout() {
-  const [isOpen, setIsOpen] = useState(false);
+export function Header() {
   const { theme, setTheme } = useTheme();
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
@@ -55,15 +57,33 @@ export function NoteLayout() {
             <Label>Joshua Advincula</Label>
             <Separator orientation="vertical" />
             <div>
-              <Button variant="ghost" size="icon" onClick={toggleTheme}>
-                {theme === "light" ? <MoonStarIcon /> : <Sun />}
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" onClick={toggleTheme}>
+                      {theme === "light" ? <MoonStarIcon /> : <Sun />}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {theme === "light" ? <p>Dark mode</p> : <p>Light mode</p>}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
 
               <Dialog>
                 <DialogTrigger>
-                  <Button variant="ghost" size="icon">
-                    <LogOutIcon />
-                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <LogOutIcon />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Logout</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
@@ -87,29 +107,6 @@ export function NoteLayout() {
           </div>
         </div>
         <Separator />
-      </div>
-      <div className="container mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8 ml-8 mr-8 mb-8">
-          <NoteCard />
-          <NoteCard />
-          <NoteCard />
-          <NoteCard />
-          <NoteCard />
-          <NoteCard />
-          <NoteCard />
-          <NoteCard />
-          <NoteCard />
-          <NoteCard />
-        </div>
-      </div>
-      <div className="fixed bottom-0 right-0 mb-6 mr-6">
-        <Button
-          className="w-12 h-12 rounded-full"
-          onClick={() => setIsOpen(true)}
-        >
-          <Plus />
-        </Button>
-        <NoteAdd isOpen={isOpen} setIsOpen={setIsOpen} />
       </div>
     </>
   );

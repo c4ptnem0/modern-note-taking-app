@@ -1,6 +1,8 @@
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import { Separator } from "./ui/separator";
 import { Pencil, Trash2 } from "lucide-react";
+import { useTheme } from "../components/themes/theme-provider";
 import {
   Tooltip,
   TooltipContent,
@@ -15,9 +17,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "./ui/separator";
 
 export function NoteCard() {
+  const { theme, setTheme } = useTheme();
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
   return (
     <>
       <Card className="transition duration-200 ease-in-out hover:-translate-y-2 hover:drop-shadow-md cursor-pointer z-0">
