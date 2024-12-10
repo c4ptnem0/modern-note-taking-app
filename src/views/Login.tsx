@@ -18,7 +18,6 @@ import {
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import axiosInstance from "@/utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
 
@@ -83,11 +82,11 @@ export function Login() {
       });
 
       console.log("Form submitted successfully:", values);
-
       if (response.data && response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken);
         navigate("/dashboard");
       }
+
       // handle successful login response
     } catch (error) {
       // Handle errors during submission
@@ -97,8 +96,8 @@ export function Login() {
         className:
           "fixed top-0 right-0 z-[100] flex max-h-screen w-full sm:max-w-[420px] p-4 mt-6 mr-6",
         variant: "destructive",
-        title: "Submission Error",
-        description: "An error occurred during submission.",
+        title: "Uh oh! Something went wrong.",
+        description: "Email or Password is incorrect!",
         action: <ToastAction altText="Retry">Retry</ToastAction>,
       });
     }
@@ -139,7 +138,11 @@ export function Login() {
                     <FormItem>
                       <FormLabel>Pasword</FormLabel>
                       <FormControl>
-                        <Input placeholder="Password" {...field} />
+                        <Input
+                          placeholder="Password"
+                          type="password"
+                          {...field}
+                        />
                       </FormControl>
                     </FormItem>
                   )}
