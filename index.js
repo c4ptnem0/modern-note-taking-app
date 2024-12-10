@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import { readFileSync } from "fs";
 import path from "path";
 import jwt from "jsonwebtoken";
-import { authenticationToken } from "./utilities.js";
+import { authenticationToken } from "./src/utils/utilities.js";
 import { User } from "./models/user.model.js";
 import { Note } from "./models/note.model.js";
 
