@@ -1,6 +1,7 @@
 import { NoteCard } from "../components/NoteCard";
 import { Button } from "../components/ui/button";
-import { Plus } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { CircleAlert, Plus, Terminal } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -63,15 +64,22 @@ export function NoteLayout() {
       <Header userInfo={userInfo} />
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mt-8 ml-10 mr-10 mb-8">
-          {allNotes.map((item) => (
-            <NoteCard
-              key={item._id}
-              title={item.title}
-              content={item.content}
-              tags={item.tags}
-              date={item.createdOn}
-            />
-          ))}
+          {allNotes.length > 0 ? (
+            allNotes.map((item) => (
+              <NoteCard
+                key={item._id}
+                title={item.title}
+                content={item.content}
+                tags={item.tags}
+                date={item.createdOn}
+              />
+            ))
+          ) : (
+            <div>
+              There are no notes available, create a new one by clicking the add
+              circle button below (+).
+            </div>
+          )}
         </div>
       </div>
       <div className="fixed bottom-0 right-0 mb-6 mr-6">
@@ -91,7 +99,11 @@ export function NoteLayout() {
           </Tooltip>
         </TooltipProvider>
 
-        <NoteAdd isOpen={isOpen} setIsOpen={setIsOpen} />
+        <NoteAdd
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          getAllNotes={getAllNotes}
+        />
       </div>
     </>
   );
