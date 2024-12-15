@@ -2,7 +2,6 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { Pencil, Trash2 } from "lucide-react";
-import { useTheme } from "../components/themes/theme-provider";
 import {
   Tooltip,
   TooltipContent,
@@ -17,26 +16,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import moment from "moment";
+import { NotesProps } from "@/types/type";
 
-export function NoteCard() {
-  const { theme, setTheme } = useTheme();
-  const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
-  };
+export function NoteCard({ title, content, tags, date }: NotesProps) {
   return (
     <>
       <Card className="transition duration-200 ease-in-out hover:-translate-y-2 hover:drop-shadow-md cursor-pointer z-0">
         <CardHeader>
-          <CardTitle>Card Title</CardTitle>
-          <CardDescription>December 24, 2025</CardDescription>
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>
+            {moment(date).format("Do MMM YYYY")}
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer eu
-            erat at sem euismod consectetur vitae nec augue. Donec et mollis
-            augue. Nunc vulputate vitae magna nec sollicitudin. Sed et leo at
-            est finibus viverra quis sit amet lorem.
-          </p>
+          <p>{content}</p>
         </CardContent>
         <Separator
           className="justify-self-center md:w-11/12 mb-3"
@@ -44,9 +38,9 @@ export function NoteCard() {
         />
         <CardFooter className="flex items-center justify-between">
           <div className="justify-center space-x-1">
-            <Badge variant="secondary">Food</Badge>
-            <Badge variant="secondary">Tech</Badge>
-            <Badge variant="secondary">Paycheck</Badge>
+            {tags.map((item) => (
+              <Badge variant="secondary">{item}</Badge>
+            ))}
           </div>
           <div className="flex items-center gap-0 mt-auto">
             <TooltipProvider>

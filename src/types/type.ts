@@ -11,3 +11,11 @@ export type NoteProps = {
     createOn: string;
   } | null;
 };
+
+export type NotesProps = {
+  _id: number;
+  title: string;
+  content: string;
+  tags: string[];
+  date: string;
+};
