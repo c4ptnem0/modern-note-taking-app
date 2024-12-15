@@ -30,7 +30,7 @@ export function NoteCard({ title, content, tags, date }: NotesProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p>{content}</p>
+          <p>{content.length > 40 ? `${content.slice(0, 80)} ...` : content}</p>
         </CardContent>
         <Separator
           className="justify-self-center md:w-11/12 mb-3"
