@@ -14,12 +14,16 @@ import { Header } from "@/components/Header";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/utils/axiosInstance";
 import { NoteProps, NotesProps } from "@/types/type";
-import { all } from "axios";
 
 export function NoteLayout() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpenModal, setIsOpenModal] = useState({
+    isOpen: false,
+    type: "Add",
+    data: null,
+  });
   const [userInfo, setUserInfo] = useState<NoteProps["user"]>();
   const [allNotes, setAllNotes] = useState([]);
+  const [selectedNote, setSelectedNote] = useState(null);
   const navigate = useNavigate();
 
   // Get logged in user info
@@ -59,6 +63,11 @@ export function NoteLayout() {
 
   console.log("notes: ", allNotes);
 
+  const handleEdit = (note) => {
+    setIsOpenModal({ isOpen: true, data: note, type: "edit" });
+    console.log("noted: ", note);
+  };
+
   return (
     <>
       <Header userInfo={userInfo} />
@@ -72,6 +81,8 @@ export function NoteLayout() {
                 content={item.content}
                 tags={item.tags}
                 date={item.createdOn}
+                onEdit={() => handleEdit(item)}
+                selectedNote={selectedNote}
               />
             ))
           ) : (
@@ -88,7 +99,9 @@ export function NoteLayout() {
             <TooltipTrigger asChild>
               <Button
                 className="w-12 h-12 rounded-full"
-                onClick={() => setIsOpen(true)}
+                onClick={() => {
+                  setIsOpenModal({ isOpen: true, type: "add", data: null });
+                }}
               >
                 <Plus />
               </Button>
@@ -100,9 +113,9 @@ export function NoteLayout() {
         </TooltipProvider>
 
         <NoteAdd
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
           getAllNotes={getAllNotes}
+          isOpenModal={isOpenModal}
+          setIsOpenModal={setIsOpenModal}
         />
       </div>
     </>
