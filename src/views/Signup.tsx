@@ -18,9 +18,8 @@ import {
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import axiosInstance from "@/utils/axiosInstance";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface LoginResponse {
   accessToken: string;
@@ -36,8 +35,10 @@ export function Signup() {
   const navigate = useNavigate();
 
   const formSchema = z.object({
-    email: z.string(),
-    password: z.string(),
+    email: z.string().email({ message: "Invalid email address" }),
+    password: z
+      .string()
+      .min(8, { message: "Must be 8 or more characters long!" }),
     fullname: z.string(),
   });
 
@@ -65,18 +66,6 @@ export function Signup() {
       });
     }
 
-    if (!values.email.includes("@gmail.com")) {
-      // Show toast notification for invalid email domain
-      toast({
-        className:
-          "fixed top-0 right-0 z-[100] flex max-h-screen w-full sm:max-w-[420px] p-4 mt-6 mr-6",
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "Please use a valid email address",
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
-      });
-    }
-
     try {
       // Proceed with valid submission
       const response = await axiosInstance.put<LoginResponse>(
@@ -89,24 +78,33 @@ export function Signup() {
       );
 
       console.log("Form submitted successfully:", values);
+
       if (response.data && response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken);
         navigate("/");
+
+        toast({
+          className:
+            "fixed top-0 right-0 z-[100] flex max-h-screen w-full sm:max-w-[420px] p-4 mt-6 mr-6 bg-green-500 text-white rounded-md shadow-lg",
+          title: "Success!",
+          description: "Account created successfully! You can now login!",
+          action: <ToastAction altText="Retry">Ok!</ToastAction>,
+        });
+      } else {
+        toast({
+          className:
+            "fixed top-0 right-0 z-[100] flex max-h-screen w-full sm:max-w-[420px] p-4 mt-6 mr-6",
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: "Email already taken, try another one!",
+          action: <ToastAction altText="Retry">Retry</ToastAction>,
+        });
       }
 
       // handle successful login response
     } catch (error) {
       // Handle errors during submission
       console.error("Error submitting form:", error);
-
-      // toast({
-      //   className:
-      //     "fixed top-0 right-0 z-[100] flex max-h-screen w-full sm:max-w-[420px] p-4 mt-6 mr-6",
-      //   variant: "destructive",
-      //   title: "Uh oh! Something went wrong.",
-      //   description: "Email or Password is incorrect!",
-      //   action: <ToastAction altText="Retry">Retry</ToastAction>,
-      // });
     }
   }
 
@@ -134,6 +132,7 @@ export function Signup() {
                       <FormControl>
                         <Input placeholder="Full Name" {...field} />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -147,6 +146,7 @@ export function Signup() {
                       <FormControl>
                         <Input placeholder="Email" {...field} />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -164,6 +164,7 @@ export function Signup() {
                           {...field}
                         />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -189,6 +190,12 @@ export function Signup() {
             <Button>
               <FaGoogle /> Google
             </Button>
+          </div>
+          <div className="text-center mt-4">
+            Already have an Account?{" "}
+            <Link to="/" className="font-medium underline text-blue-700">
+              Login
+            </Link>
           </div>
         </div>
       </div>

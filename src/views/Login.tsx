@@ -19,7 +19,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import axiosInstance from "@/utils/axiosInstance";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface LoginResponse {
   accessToken: string;
@@ -169,6 +169,12 @@ export function Login() {
             <Button>
               <FaGoogle /> Google
             </Button>
+          </div>
+          <div className="text-center mt-4">
+            Not registered yet?{" "}
+            <Link to="/signup" className="font-medium underline text-blue-700">
+              Create an Account
+            </Link>
           </div>
         </div>
       </div>
