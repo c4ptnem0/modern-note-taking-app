@@ -22,14 +22,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import { preprocess, z } from "zod";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axiosInstance from "@/utils/axiosInstance";
-import { ToastAction } from "./ui/toast";
-import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { set } from "date-fns";
 
-export function NoteAdd({ isOpen, setIsOpen, getAllNotes }: any) {
+export function NoteAdd({ isOpenModal, setIsOpenModal, getAllNotes }: any) {
+  const { data, type } = isOpenModal;
+  const noteId = data?._id;
+
   const createOption = (label: string) => ({
     label,
     value: label.toLowerCase().replace(/\W/g, ""),
@@ -54,6 +56,14 @@ export function NoteAdd({ isOpen, setIsOpen, getAllNotes }: any) {
     });
   };
 
+  const handleClearInput = () => {
+    reset({
+      title: "",
+      content: "",
+    });
+    setValue([]);
+  };
+
   const formSchema = z.object({
     title: z.string().min(1, "Title is required"),
     content: z.string().min(1, "Content is required"),
@@ -67,36 +77,88 @@ export function NoteAdd({ isOpen, setIsOpen, getAllNotes }: any) {
     },
   });
 
+  const { reset } = form;
+
+  console.log("noteId: ", noteId);
+
   // onsubmit of add note function
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const tag = value.map((option) => option.value);
-      const response = await axiosInstance.post("/add-note", {
-        title: values.title,
-        content: values.content,
-        tags: tag,
-      });
 
-      console.log("ine: ", response);
-
-      if (response.data && response.data.note) {
-        getAllNotes();
-        setIsOpen(false);
+      if (type === "add" && data) {
+        const response = await axiosInstance.post("/add-note", {
+          title: values.title,
+          content: values.content,
+          tags: tag,
+        });
+      } else {
+        const response = await axiosInstance.put("/edit-note/" + noteId, {
+          title: values.title,
+          content: values.content,
+          tags: tag,
+        });
       }
+
+      getAllNotes();
+      setIsOpenModal({ isOpen: false, type: "add", data: null });
+      handleClearInput();
     } catch (error) {
       console.error("Error submitting form:", error);
     }
+
+    // try {
+    //   const tag = value.map((option) => option.value);
+    //   const response = await axiosInstance.post("/add-note", {
+    //     title: values.title,
+    //     content: values.content,
+    //     tags: tag,
+    //   });
+
+    //   console.log("ine: ", response);
+
+    //   if (response.data && response.data.note) {
+    //     getAllNotes();
+    //     setIsOpenModal({ isOpen: false, type: "add", data: null });
+    //     // handleClearInput();
+    //   }
+    // } catch (error) {
+    //   console.error("Error submitting form:", error);
+    // }
   }
+
+  useEffect(() => {
+    if (isOpenModal.type === "edit" && isOpenModal.data) {
+      // populate fields with existing note data for editing
+      reset({
+        title: isOpenModal.data.title || "",
+        content: isOpenModal.data.title || "",
+      });
+
+      const existingTags = isOpenModal.data.tags.map((tag: string) =>
+        createOption(tag)
+      );
+      setValue(existingTags);
+    } else if (isOpenModal.type === "add") {
+      reset({
+        title: "",
+        content: "",
+      });
+      setValue([]);
+    }
+  }, [isOpenModal, reset]);
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog open={isOpenModal.isOpen} onOpenChange={setIsOpenModal}>
         <Form {...form}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create Note</DialogTitle>
+              <DialogTitle>
+                {isOpenModal.type == "edit" ? "Edit Note" : "Create Note"}
+              </DialogTitle>
               <DialogDescription>
-                Make changes to your profile here. Click save when you're done.
+                Make changes to your note. Click save when you're done.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -170,7 +232,12 @@ export function NoteAdd({ isOpen, setIsOpen, getAllNotes }: any) {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsOpenModal({ isOpen: false, type: "add", data: null });
+                }}
+              >
                 Close
               </Button>
               <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
